@@ -1,14 +1,19 @@
+// models/User.js
 import mongoose from 'mongoose';
 
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   phone: String,
-  email: String,
-  password: String,
-  otp: String,
-  isVerified: Boolean,
-  resetToken: String, // Add this field for password reset
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  username: { type: String },
+  otp: { type: String },
+  otpExpiry: { type: Date },
+  isVerified: { type: Boolean, default: false },
 });
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+// Ensure that the model is only created once
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+export default User;

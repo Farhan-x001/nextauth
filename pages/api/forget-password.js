@@ -1,4 +1,4 @@
-import connectToDatabase from '../../lib/db';
+import connectToDatabase from '../../lib/dbconnect';
 import User from '../../models/User';
 import crypto from 'crypto';
 

@@ -1,24 +1,76 @@
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useRouter } from 'next/router'; // Import useRouter
+import { parseCookies, destroyCookie } from 'nookies';
 
-export default function Dashboard() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+const Dashboard = ({ user }) => {
+  const router = useRouter(); // Initialize useRouter hook
 
-  useEffect(() => {
-    if (status === "loading") return; // Do nothing while loading
-    if (!session) router.push("/login"); // Redirect to login if not authenticated
-  }, [session, status]);
-
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
+  const handleLogout = async () => {
+    try {
+      destroyCookie(null, 'token'); // Remove the token cookie
+      router.push('/login'); // Redirect to login page
+    } catch (error) {
+      console.error('Logout Error:', error); // Handle error
+    }
+  };
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <p>Welcome, {session.user.name}</p>
+      <h1>Welcome to Your Dashboard</h1>
+      {user ? (
+        <div>
+          <p>Hello, {user.username}!</p>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      ) : (
+        <p>Loading user data...</p>
+      )}
     </div>
   );
+};
+
+export async function getServerSideProps(context) {
+  const { token } = parseCookies(context);
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const res = await fetch(`${process.env.API_URL}/api/user`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        props: {
+          user: data.user,
+        },
+      };
+    } else {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
 }
+
+export default Dashboard;
