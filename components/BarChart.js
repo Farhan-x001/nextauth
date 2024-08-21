@@ -74,6 +74,3 @@ const BarChart = ({ data }) => {
 };
 
 export default BarChart;
-/// update the 
-//http://localhost:3001/api/categoryCounts?limit=100000
-

@@ -3,6 +3,7 @@ import { parseCookies, destroyCookie } from 'nookies';
 import { useState, useEffect } from 'react';
 import BarChart from '../components/BarChart';
 import PieChart from '../components/PieChart';
+import CategoryTotals from '../components/CategoryTotals';
 import { MenuItem, Select, FormControl, InputLabel, CircularProgress } from '@mui/material';
 
 const Dashboard = ({ user, dataset }) => {
@@ -184,6 +185,9 @@ const Dashboard = ({ user, dataset }) => {
           <h2 style={{ marginTop: '20px', marginBottom: '10px' }}>Fraud Cases Bar Graph</h2>
           <div style={{ width: '100%' }}>
             <BarChart data={fraudData} />
+          </div>
+          <div>
+          <CategoryTotals />
           </div>
         </>
       )}
