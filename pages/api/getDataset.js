@@ -26,7 +26,6 @@
 //     res.status(500).json({ error: 'Internal Server Error' });
 //   }
 // }
-// pages/api/getDataset.js
 import clientPromise from '../../lib/mongodb';
 
 export default async function handler(req, res) {
@@ -35,11 +34,15 @@ export default async function handler(req, res) {
     const db = client.db();
     const collection = db.collection('dataset'); // Make sure this matches the collection name
 
-    const { page = 1, limit = 100 } = req.query;
+    const { page = 1, limit = 100, category = '' } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    
-    const dataset = await collection.find().skip(skip).limit(parseInt(limit)).toArray();
-    const total = await collection.countDocuments();
+
+    // Build query based on category filter
+    const query = category ? { category } : {};
+
+    // Fetch the dataset based on query
+    const dataset = await collection.find(query).skip(skip).limit(parseInt(limit)).toArray();
+    const total = await collection.countDocuments(query);
 
     res.status(200).json({ dataset, total });
   } catch (error) {

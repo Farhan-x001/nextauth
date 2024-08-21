@@ -3,6 +3,7 @@ import { parseCookies, destroyCookie } from 'nookies';
 import { useState, useEffect } from 'react';
 import BarChart from '../components/BarChart';
 import PieChart from '../components/PieChart';
+import { MenuItem, Select, FormControl, InputLabel, CircularProgress } from '@mui/material';
 
 const Dashboard = ({ user, dataset }) => {
   const router = useRouter();
@@ -10,6 +11,13 @@ const Dashboard = ({ user, dataset }) => {
   const [total, setTotal] = useState(dataset.total || 0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState([
+    `es_transportation'`, `es_health'`, `es_food'`, `es_home'`, `es_hotelservices'`,
+    `es_hyper'`, `es_leisure'`, `es_otherservice'`, `es_sportsandtoys'`, `es_tech'`,
+    `es_travel'`, `es_wellnessandbeauty'`, `es_barsandrestaurants'`, `es_contents'`,
+    `es_fashion'`
+  ]);
 
   const handleLogout = async () => {
     try {
@@ -20,10 +28,10 @@ const Dashboard = ({ user, dataset }) => {
     }
   };
 
-  const fetchData = async (page = 1) => {
+  const fetchData = async (page = 1, category = '') => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/getDataset?page=${page}&limit=10`);
+      const res = await fetch(`http://localhost:3001/api/getDataset?page=${page}&limit=100&category=${category}`);
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
@@ -39,12 +47,18 @@ const Dashboard = ({ user, dataset }) => {
   };
 
   useEffect(() => {
-    fetchData(page);
-  }, [page]);
+    fetchData(page, category);
+  }, [page, category]);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
-    fetchData(newPage);
+    fetchData(newPage, category);
+  };
+
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+    setPage(1); // Reset to first page when category changes
+    fetchData(1, event.target.value);
   };
 
   return (
@@ -64,9 +78,26 @@ const Dashboard = ({ user, dataset }) => {
         <p>Loading user data...</p>
       )}
 
+      <h2 style={{ marginTop: '20px', marginBottom: '10px' }}>Filter by Category</h2>
+      <FormControl fullWidth variant="outlined" style={{ marginBottom: '20px' }}>
+        <InputLabel>Category</InputLabel>
+        <Select
+          value={category}
+          onChange={handleCategoryChange}
+          label="Category"
+        >
+          <MenuItem value=""><em>None</em></MenuItem>
+          {categories.map(cat => (
+            <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
       <h2 style={{ marginTop: '20px', marginBottom: '10px' }}>Your Dataset</h2>
       {loading ? (
-        <p>Loading dataset...</p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <CircularProgress />
+        </div>
       ) : (
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
@@ -164,7 +195,7 @@ export async function getServerSideProps(context) {
 
     const userData = await userRes.json();
 
-    const datasetRes = await fetch(`${process.env.API_URL}/api/getDataset?page=1&limit=100`);
+    const datasetRes = await fetch(`${process.env.API_URL}/api/getDataset?page=1&limit=10`);
     const datasetData = await datasetRes.json();
 
     return {
