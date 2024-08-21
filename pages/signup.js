@@ -8,6 +8,14 @@ const Signup = () => {
   const [otp, setOtp] = useState('');
   const [signupData, setSignupData] = useState({});
   const router = useRouter();
+  const handleLogin = () => {
+    router.push('/login');
+  };
+
+  const handleSignup = () => {
+    router.push('/signup');
+  };
+  
 
   const handleSignupSubmit = async (event) => {
     event.preventDefault();
@@ -83,6 +91,10 @@ const Signup = () => {
           {loading ? 'Signing Up...' : 'Signup'}
         </button>
         {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div>IF not registered Please signup</div>
+      <button onClick={handleLogin}>
+          login
+        </button>
       </form>
 
       {otpSent && (

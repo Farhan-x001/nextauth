@@ -4,6 +4,14 @@ import { setCookie } from 'nookies';
 const Login = () => {
   const router = useRouter();
 
+  // const handlesignup = () => {
+  //   router.push('/login');
+  // };
+
+  const handleSignup = () => {
+    router.push('/signup');
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -46,6 +54,11 @@ const Login = () => {
         <input type="password" name="password" required />
       </label>
       <button type="submit">Login</button>
+      <div classname="check">IF aready  registered Please signup</div>
+      <button onClick={handleSignup}>
+          login
+        </button>
+
     </form>
   );
 };
