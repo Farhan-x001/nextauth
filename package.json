@@ -26,7 +26,8 @@
     "nookies": "^2.5.2",
     "react": "latest",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
     "eslint": "7.32.0",

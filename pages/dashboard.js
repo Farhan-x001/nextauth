@@ -18,6 +18,12 @@ const Dashboard = ({ user, dataset }) => {
     `es_travel'`, `es_wellnessandbeauty'`, `es_barsandrestaurants'`, `es_contents'`,
     `es_fashion'`
   ]);
+  const [fraudData, setFraudData] = useState([]);
+
+  const handleShowFraud = () => {
+    setShowFraud(true);
+    fetchData(1, category, true);
+  };
 
   const handleLogout = async () => {
     try {
@@ -46,8 +52,23 @@ const Dashboard = ({ user, dataset }) => {
     }
   };
 
+  const fetchFraudData = async () => {
+    try {
+      const res = await fetch('http://localhost:3001/api/categoryCounts?limit=100000');
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+      const data = await res.json();
+      setFraudData(Object.entries(data).map(([category, count]) => ({ category, count })));
+    } catch (error) {
+      console.error('Error fetching fraud data:', error);
+      alert('An error occurred while fetching fraud data.');
+    }
+  };
+
   useEffect(() => {
     fetchData(page, category);
+    fetchFraudData(); // Fetch fraud data on component mount
   }, [page, category]);
 
   const handlePageChange = (newPage) => {
@@ -159,60 +180,32 @@ const Dashboard = ({ user, dataset }) => {
               <PieChart data={data} />
             </div>
           </div>
+
+          <h2 style={{ marginTop: '20px', marginBottom: '10px' }}>Fraud Cases Bar Graph</h2>
+          <div style={{ width: '100%' }}>
+            <BarChart data={fraudData} />
+          </div>
         </>
       )}
     </div>
   );
 };
 
-export async function getServerSideProps(context) {
-  const { token } = parseCookies(context);
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
-  try {
-    const userRes = await fetch(`${process.env.API_URL}/api/user`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!userRes.ok) {
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false,
-        },
-      };
-    }
-
-    const userData = await userRes.json();
-
-    const datasetRes = await fetch(`${process.env.API_URL}/api/getDataset?page=1&limit=10`);
-    const datasetData = await datasetRes.json();
-
-    return {
-      props: {
-        user: userData.user,
-        dataset: datasetData,
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-}
-
 export default Dashboard;
+
+export async function getServerSideProps(ctx) {
+  const cookies = parseCookies(ctx);
+  const token = cookies.token;
+  if (!token) {
+    return { redirect: { destination: '/login', permanent: false } };
+  }
+
+  const res = await fetch('http://localhost:3001/api/getDataset');
+  const dataset = await res.json();
+
+  const user = await fetch('http://localhost:3001/api/user', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  }).then(res => res.json());
+
+  return { props: { user, dataset } };
+}
