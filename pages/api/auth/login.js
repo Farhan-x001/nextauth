@@ -1,7 +1,8 @@
 // pages/api/auth/login.js
-import { connectToDatabase } from '../../../lib/dbconnect'; // Ensure this path is correct
+import { dbConnect } from '../../../lib/dbconnect';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+//import User from '../../../lib/models/User'; // Import the User model
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -15,10 +16,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { db } = await connectToDatabase();
+    await dbConnect(); // Connect to the database
 
-    // Ensure your collection name matches your MongoDB setup
-    const user = await db.collection('users').findOne({ email });
+    // Use the User model to find the user
+    const user = await User.findOne({ email });
 
     if (!user) {
       console.log(`User not found for email: ${email}`);
