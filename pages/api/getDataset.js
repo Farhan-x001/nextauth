@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const db = client.db();
     const collection = db.collection('dataset'); // Make sure this matches the collection name
 
-    const { page = 1, limit = 100, category = '' } = req.query;
+    const { page = 1, limit = 150, category = '' } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     // Build query based on category filter

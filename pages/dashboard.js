@@ -55,7 +55,7 @@ const Dashboard = ({ user, dataset }) => {
 
   const fetchFraudData = async () => {
     try {
-      const res = await fetch('http://localhost:3001/api/categoryCounts?limit=100000');
+      const res = await fetch('http://localhost:3001/api/categoryCounts?limit=1000000');
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
@@ -128,6 +128,10 @@ const Dashboard = ({ user, dataset }) => {
                 {['Step', 'Customer', 'Age', 'Gender', 'Zipcode Origin', 'Merchant', 'Zip Merchant', 'Category', 'Amount', 'Fraud'].map((header) => (
                   <th key={header} style={{ borderBottom: '2px solid #ddd', padding: '10px', textAlign: 'left' }}>{header}</th>
                 ))}
+                 {/* {[ 'Age', 'Gender', 'Zipcode Origin', 'Merchant', 'Zip Merchant', 'Category', 'Amount', 'Fraud'].map((header) => (
+                  <th key={header} style={{ borderBottom: '2px solid #ddd', padding: '10px', textAlign: 'left' }}>{header}</th>
+                ))} */}
+
               </tr>
             </thead>
             <tbody>
@@ -187,7 +191,7 @@ const Dashboard = ({ user, dataset }) => {
             <BarChart data={fraudData} />
           </div>
           <div>
-          <CategoryTotals />
+             <CategoryTotals />
           </div>
         </>
       )}

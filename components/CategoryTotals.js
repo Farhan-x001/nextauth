@@ -8,7 +8,7 @@ const CategoryTotals = () => {
   useEffect(() => {
     const fetchCategoryTotals = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/categoryCounts?limit=100000');
+        const res = await fetch('http://localhost:3001/api/categoryCounts?limit=1000000');
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
         }

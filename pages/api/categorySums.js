@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const db = client.db();
     const collection = db.collection('dataset');
 
-    // Extract limit from query parameters or set a default value
+    
     const { limit = 100 } = req.query;
 
     // List of categories to check
