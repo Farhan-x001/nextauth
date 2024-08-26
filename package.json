@@ -25,9 +25,9 @@
     "next-auth": "^4.24.7",
     "nodemailer": "^6.9.14",
     "nookies": "^2.5.2",
-    "react": "latest",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "latest",
+    "react-dom": "^18.3.1",
     "recharts": "^2.12.7"
   },
   "devDependencies": {
